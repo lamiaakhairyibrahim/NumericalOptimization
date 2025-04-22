@@ -27,8 +27,29 @@ class NumericOptim:
             theta = theta - u
 
         return loss, theta
+    
 
+    def stochastic_GD_1(self):
+        shape_data = self.x.shape
+        x0 = np.ones([shape_data[0], 1]) 
+        data_x = np.concatenate((x0, self.x), axis=1)
+        theta = np.zeros((data_x.shape[1], 1))
+        loss = []
 
+        for epoch in range(self.n_itration):
+            total_cost = 0
+            for i in range(data_x.shape[0]):
+                xi = data_x[i:i+1, :]        # Sample input (1, n)
+                yi = self.y[i:i+1, :]        # Corresponding target (1, 1)
+                prediction = xi @ theta
+                error = prediction - yi
+                cost = 0.5 * float(error.T @ error)
+                total_cost += cost
+                grad = xi.T @ error
+                theta = theta - self.lr * grad  # Update immediately per sample
+            loss.append(total_cost / data_x.shape[0])  # Average loss per epoch
+
+        return loss, theta
 
 
 
